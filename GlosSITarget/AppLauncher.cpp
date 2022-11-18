@@ -147,6 +147,12 @@ void AppLauncher::update()
             }
         }
         getProcessHwnds();
+        if (Settings::launch.closeOnHwndExit) {
+            if (AppLauncher::process_hwnds_.empty()) {
+                spdlog::info("Configured to close when all windows are closed. Shutting down...");
+                shutdown_();
+            }
+        }
 #endif
         pid_mutex_.unlock();
         process_check_clock_.restart();
