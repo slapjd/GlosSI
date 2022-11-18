@@ -59,6 +59,11 @@ void AppLauncher::launchApp(const std::wstring& path, const std::wstring& args)
     if (Settings::launch.detectExistingProcs) {
         spdlog::info("Detect existing processes is turned on, detecting...");
         getPidsByPath(path);
+        if (Settings::launch.ignoreExistingHwnds) {
+            spdlog::info("Ignore existing windows is turned on, detecting existing windows...");
+            getProcessHwnds();
+            ignored_process_hwnds_ = process_hwnds_;
+        }
     }
 
     if (Settings::launch.isUWP) {
@@ -276,7 +281,8 @@ void AppLauncher::getProcessHwnds()
         GetWindowThreadProcessId(curr_wnd, &check_pid);
         if ((std::ranges::find_if(pids_, [check_pid](auto pid) {
                  return pid == check_pid;
-             }) != pids_.end())) {
+             }) != pids_.end()) &&
+            std::ranges::find(ignored_process_hwnds_, curr_wnd) == ignored_process_hwnds_.end()) {
             process_hwnds_.push_back(curr_wnd);
         }
     } while (curr_wnd != nullptr);
