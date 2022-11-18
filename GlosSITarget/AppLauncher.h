@@ -48,6 +48,7 @@ class AppLauncher {
 #ifdef _WIN32
     static bool IsProcessRunning(DWORD pid);
     void getChildPids(DWORD parent_pid);
+    void getPidsByPath(const std::wstring name);
     void getProcessHwnds();
     std::vector<HWND>& process_hwnds_;
 

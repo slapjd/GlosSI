@@ -51,10 +51,14 @@ AppLauncher::AppLauncher(
 void AppLauncher::launchApp(const std::wstring& path, const std::wstring& args)
 {
 #ifdef _WIN32
-
     if (!Settings::launch.launcherProcesses.empty()) {
         has_extra_launchers_ = true;
         spdlog::debug("Has extra launchers");
+    }
+
+    if (Settings::launch.detectExistingProcs) {
+        spdlog::info("Detect existing processes is turned on, detecting...");
+        getPidsByPath(path);
     }
 
     if (Settings::launch.isUWP) {
@@ -221,6 +225,34 @@ void AppLauncher::getChildPids(DWORD parent_pid)
                     }
                     pids_.push_back(pe.th32ProcessID);
                     getChildPids(pe.th32ProcessID);
+                }
+            }
+        } while (Process32Next(hp, &pe));
+    }
+    CloseHandle(hp);
+}
+
+void AppLauncher::getPidsByPath(const std::wstring path)
+{
+    const auto native_seps_path = std::regex_replace(path, std::wregex(L"(\\/|\\\\)"), L"\\");
+    HANDLE hp = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    PROCESSENTRY32 pe = {0};
+    pe.dwSize = sizeof(PROCESSENTRY32);
+    if (Process32First(hp, &pe)) {
+        do {
+            std::wstring procExeFile = std::wstring(pe.szExeFile);
+            if (native_seps_path.compare(pe.szExeFile) == 0
+                || native_seps_path.find(pe.szExeFile) != std::wstring::npos
+                || procExeFile.find(native_seps_path) != std::wstring::npos) {
+                //TODO: possibly get exe name from path and compare to that instead of what this currently does
+                if (std::ranges::find(pids_, pe.th32ProcessID) == pids_.end()) {
+                    if (Settings::common.extendedLogging) {
+                        spdlog::info(L"Found existing process \"{}\" with PID \"{}\"", glossi_util::GetProcName(pe.th32ProcessID), pe.th32ProcessID);
+                    }
+                    pids_.push_back(pe.th32ProcessID);
+                    if (Settings::launch.waitForChildProcs) {
+                        getChildPids(pe.th32ProcessID);
+                    }
                 }
             }
         } while (Process32Next(hp, &pe));

@@ -38,6 +38,7 @@ inline struct Launch {
     std::wstring launchAppArgs;
     bool closeOnExit = true;
     bool waitForChildProcs = true;
+    bool detectExistingProcs = false;
     bool isUWP = false;
     bool ignoreLauncher = true;
     bool killLauncher = false;
@@ -170,6 +171,7 @@ inline void Parse(const nlohmann::basic_json<>& json)
             safeWStringParse(launchconf, "launchAppArgs", launch.launchAppArgs);
             safeParseValue(launchconf, "closeOnExit", launch.closeOnExit);
             safeParseValue(launchconf, "waitForChildProcs", launch.waitForChildProcs);
+            safeParseValue(launchconf, "detectExistingProcs", launch.detectExistingProcs);
             safeParseValue(launchconf, "killLauncher", launch.killLauncher);
             safeParseValue(launchconf, "ignoreLauncher", launch.ignoreLauncher);
 
@@ -296,6 +298,7 @@ inline nlohmann::json toJson()
     json["launch"]["launchAppArgs"] = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>().to_bytes(launch.launchAppArgs);
     json["launch"]["closeOnExit"] = launch.closeOnExit;
     json["launch"]["waitForChildProcs"] = launch.waitForChildProcs;
+    json["launch"]["detectExistingProcs"] = launch.detectExistingProcs;
     json["devices"]["hideDevices"] = devices.hideDevices;
     json["devices"]["realDeviceIds"] = devices.realDeviceIds;
     json["window"]["windowMode"] = window.windowMode;
