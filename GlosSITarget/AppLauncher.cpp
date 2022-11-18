@@ -167,9 +167,17 @@ void AppLauncher::update()
 void AppLauncher::close()
 {
 #ifdef _WIN32
-    if (process_info.dwProcessId > 0) {
-        CloseHandle(process_info.hProcess);
-        CloseHandle(process_info.hThread);
+    if (Settings::launch.closeOnExit) {
+        if (process_info.dwProcessId > 0) {
+            CloseHandle(process_info.hProcess);
+            CloseHandle(process_info.hThread);
+        }
+    }
+    
+    if (Settings::launch.closeOnHwndExit) {
+        for (auto hwnd : process_hwnds_) {
+            CloseHandle(hwnd);
+        }
     }
 #endif
 }
