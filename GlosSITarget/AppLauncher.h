@@ -50,6 +50,7 @@ class AppLauncher {
     void getChildPids(DWORD parent_pid);
     void getPidsByPath(const std::wstring name);
     void getProcessHwnds();
+    std::vector<HWND> ignored_process_hwnds_;
     std::vector<HWND>& process_hwnds_;
 
     bool has_extra_launchers_ = false;

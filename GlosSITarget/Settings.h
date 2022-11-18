@@ -40,6 +40,7 @@ inline struct Launch {
     bool waitForChildProcs = true;
     bool detectExistingProcs = false;
     bool closeOnHwndExit = false;
+    bool ignoreExistingHwnds = false;
     bool isUWP = false;
     bool ignoreLauncher = true;
     bool killLauncher = false;
@@ -174,6 +175,7 @@ inline void Parse(const nlohmann::basic_json<>& json)
             safeParseValue(launchconf, "waitForChildProcs", launch.waitForChildProcs);
             safeParseValue(launchconf, "detectExistingProcs", launch.detectExistingProcs);
             safeParseValue(launchconf, "closeOnHwndExit", launch.closeOnHwndExit);
+            safeParseValue(launchconf, "ignoreExistingHwnds", launch.ignoreExistingHwnds);
             safeParseValue(launchconf, "killLauncher", launch.killLauncher);
             safeParseValue(launchconf, "ignoreLauncher", launch.ignoreLauncher);
 
@@ -302,6 +304,7 @@ inline nlohmann::json toJson()
     json["launch"]["waitForChildProcs"] = launch.waitForChildProcs;
     json["launch"]["detectExistingProcs"] = launch.detectExistingProcs;
     json["launch"]["closeOnHwndExit"] = launch.closeOnHwndExit;
+    json["launch"]["ignoreExistingHwnds"] = launch.ignoreExistingHwnds;
     json["devices"]["hideDevices"] = devices.hideDevices;
     json["devices"]["realDeviceIds"] = devices.realDeviceIds;
     json["window"]["windowMode"] = window.windowMode;
