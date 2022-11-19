@@ -37,6 +37,7 @@ class SteamTarget {
   public:
     explicit SteamTarget();
     int run();
+    void launcherClose();
 
   private:
     void onOverlayChanged(bool overlay_open);

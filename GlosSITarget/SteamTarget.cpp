@@ -154,6 +154,11 @@ Application will not function!");
     return 0;
 }
 
+void SteamTarget::launcherClose()
+{
+    launcher_.close();
+}
+
 void SteamTarget::onOverlayChanged(bool overlay_open)
 {
     if (overlay_open) {

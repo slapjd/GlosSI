@@ -176,7 +176,7 @@ void AppLauncher::close()
     
     if (Settings::launch.closeOnHwndExit) {
         for (auto hwnd : process_hwnds_) {
-            CloseHandle(hwnd);
+            PostMessage(hwnd, WM_CLOSE, 0, 0);
         }
     }
 #endif

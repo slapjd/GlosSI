@@ -108,6 +108,20 @@ LONG Win32FaultHandler(struct _EXCEPTION_POINTERS* ExInfo)
     return EXCEPTION_EXECUTE_HANDLER;
 }
 
+SteamTarget* globalTarget;
+LRESULT CALLBACK WindowProc(
+    __in HWND hWindow,
+    __in UINT uMsg,
+    __in WPARAM wParam,
+    __in LPARAM lParam
+)
+{
+    if (uMsg == WM_CLOSE) {
+        globalTarget->launcherClose();
+    }
+    return DefWindowProc(hWindow, uMsg, wParam, lParam);
+}
+
 #endif
 
 #ifdef _WIN32
@@ -184,6 +198,7 @@ int main(int argc, char* argv[])
         Settings::Parse(argsv);
         Settings::checkWinVer();
         SteamTarget target;
+        globalTarget = &target;
 #else // Code below is broken now due to parse requiring std::wstring instead of std:string. Sorry.
         std::string argsv = "";
         if (argc > 1) {
