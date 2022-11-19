@@ -153,9 +153,14 @@ void AppLauncher::update()
         }
         getProcessHwnds();
         if (Settings::launch.closeOnHwndExit) {
-            if (AppLauncher::process_hwnds_.empty()) {
+            if (AppLauncher::process_hwnds_.empty() && AppLauncher::hwnd_found) {
+                //We wait for at least 1 window to show up before calling it quits
                 spdlog::info("Configured to close when all windows are closed. Shutting down...");
                 shutdown_();
+            }
+            else {
+                //We've found a valid window so we can now turn on the window shutdown functionality
+                AppLauncher::hwnd_found = true;
             }
         }
 #endif
@@ -176,6 +181,10 @@ void AppLauncher::close()
     
     if (Settings::launch.closeOnHwndExit) {
         for (auto hwnd : process_hwnds_) {
+            //Equivalent of Alt+F4
+            //I'm not killing processes because there may be other windows associated with
+            //said process that we *don't* want to kill
+            //Process killing can be handled with closeOnExit
             PostMessage(hwnd, WM_CLOSE, 0, 0);
         }
     }
