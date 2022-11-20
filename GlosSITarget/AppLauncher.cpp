@@ -60,9 +60,13 @@ void AppLauncher::launchApp(const std::wstring& path, const std::wstring& args)
         spdlog::info("Detect existing processes is turned on, detecting...");
         getPidsByPath(path);
         if (Settings::launch.ignoreExistingHwnds) {
+            //Done before process launch, so all found hwnds are not launched by us
             spdlog::info("Ignore existing windows is turned on, detecting existing windows...");
             getProcessHwnds();
-            ignored_process_hwnds_ = process_hwnds_;
+            
+            blacklisted_hwnds.reserve(process_hwnds_.size());
+            std::ranges::copy(process_hwnds_.begin(), process_hwnds_.end(),
+                              std::back_inserter(blacklisted_hwnds));
         }
     }
 
@@ -285,7 +289,7 @@ void AppLauncher::getProcessHwnds()
         if ((std::ranges::find_if(pids_, [check_pid](auto pid) {
                  return pid == check_pid;
              }) != pids_.end()) &&
-            std::ranges::find(ignored_process_hwnds_, curr_wnd) == ignored_process_hwnds_.end()) {
+            std::ranges::find(blacklisted_hwnds, curr_wnd) == blacklisted_hwnds.end()) {
             process_hwnds_.push_back(curr_wnd);
         }
     } while (curr_wnd != nullptr);
