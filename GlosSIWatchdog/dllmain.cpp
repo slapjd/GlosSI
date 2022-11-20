@@ -106,6 +106,7 @@ DWORD WINAPI watchdog(HMODULE hModule)
 	fetchSettings(http_client);
 
 	std::vector<DWORD> pids;
+	std::vector<HWND> hwnds;
 	while (glossi_hwnd)
 	{
 		http_client.set_connection_timeout(120);
@@ -123,6 +124,25 @@ DWORD WINAPI watchdog(HMODULE hModule)
 			spdlog::error("Couldn't fetch launched PIDs: {}", (int)http_res.error());
 		}
 
+		const auto http_res_2 = http_client.Get("/launched-hwnds");
+		if (http_res_2.error() == httplib::Error::Success && http_res_2->status == 200)
+		{
+			const auto json = nlohmann::json::parse(http_res_2->body);
+			if (Settings::common.extendedLogging)
+			{
+				spdlog::trace("Received hwnds: {}", json.dump());
+			}
+
+			hwnds.clear();
+			for (const auto temp_hwnd : json.get<std::vector<LONG_PTR>>()) {
+				hwnds.push_back((HWND) temp_hwnd); //Hacky but maybe works
+			}
+		}
+		else {
+			spdlog::error("Couldn't fetch launched HWNDs: {}", (int)http_res_2.error());
+		}
+
+		
 		glossi_hwnd = FindWindowA(nullptr, "GlosSITarget");
 
 		Sleep(333);
@@ -152,6 +172,15 @@ DWORD WINAPI watchdog(HMODULE hModule)
 					spdlog::debug("Process {} is not running", pid);
 				}
 			}
+		}
+	}
+
+	if (Settings::launch.closeOnHwndExit)
+	{
+		spdlog::info("Closing launched windows");
+
+		for (const auto hwnd : hwnds) {
+			PostMessage(hwnd, WM_CLOSE, 0, 0);
 		}
 	}
 

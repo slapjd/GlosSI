@@ -62,6 +62,11 @@ void HttpServer::run()
         res.set_content(j.dump(), "text/json");
     });
 
+    server_.Get("/launched-hwnds", [this](const httplib::Request& req, httplib::Response& res) {
+        const nlohmann::json j = app_launcher_.launchedHwnds();
+        res.set_content(j.dump(), "text/json");
+    });
+
     server_.Post("/quit", [this](const httplib::Request& req, httplib::Response& res) {
         close_();
     });

@@ -204,6 +204,17 @@ std::vector<DWORD> AppLauncher::launchedPids()
     return res;
 }
 
+std::vector<LONG_PTR> AppLauncher::launchedHwnds()
+{
+    std::vector<LONG_PTR> res;
+    res.reserve(process_hwnds_.size());
+    for (auto hwnd : process_hwnds_) {
+        res.push_back((LONG_PTR) hwnd); //This *might* work but probably shouldn't
+    }
+
+    return res;
+}
+
 void AppLauncher::addPids(const std::vector<DWORD>& pids)
 {
     pid_mutex_.lock();

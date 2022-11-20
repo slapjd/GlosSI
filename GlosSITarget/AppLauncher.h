@@ -38,6 +38,7 @@ class AppLauncher {
     void close();
 
     std::vector<DWORD> launchedPids();
+    std::vector<LONG_PTR> launchedHwnds();
     void addPids(const std::vector<DWORD>& pids);
     
   private:
