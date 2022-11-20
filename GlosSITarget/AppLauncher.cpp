@@ -101,6 +101,24 @@ void AppLauncher::launchApp(const std::wstring& path, const std::wstring& args)
 #endif
 }
 
+void AppLauncher::killApp()
+{
+    if (Settings::launch.closeOnExit) {
+        for (const auto pid : pids_) {
+            if (IsProcessRunning(pid)) {
+                glossi_util::KillProcess(pid);
+            }
+        }
+    }
+
+    if (Settings::launch.closeOnHwndExit) {
+        for (auto hwnd : process_hwnds_) {
+            spdlog::trace("KILLING_HWND: {}", (LONG_PTR)hwnd);
+            PostMessage(hwnd, WM_CLOSE, 0, 0);
+        }
+    }
+}
+
 void AppLauncher::update()
 {
     if (process_check_clock_.getElapsedTime().asMilliseconds() > 250) {

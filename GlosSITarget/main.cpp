@@ -107,7 +107,6 @@ LONG Win32FaultHandler(struct _EXCEPTION_POINTERS* ExInfo)
     */
     return EXCEPTION_EXECUTE_HANDLER;
 }
-
 #endif
 
 #ifdef _WIN32

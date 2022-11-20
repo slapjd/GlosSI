@@ -150,6 +150,7 @@ Application will not function!");
     input_redirector_.stop();
     hidhide_.disableHidHide();
 #endif
+    launcher_.killApp();
     launcher_.close();
     return 0;
 }

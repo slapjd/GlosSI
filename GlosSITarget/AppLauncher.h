@@ -34,6 +34,7 @@ class AppLauncher {
         std::function<void()> shutdown = []() {});
 
     void launchApp(const std::wstring& path, const std::wstring& args = L"");
+    void killApp();
     void update();
     void close();
 
