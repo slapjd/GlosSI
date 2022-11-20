@@ -67,5 +67,7 @@ class AppLauncher {
     STARTUPINFO info{sizeof(info)};
     PROCESS_INFORMATION process_info{};
     std::vector<DWORD> pids_;
+
+    bool open_window_found = false;
 #endif
 };

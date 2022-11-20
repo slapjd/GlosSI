@@ -153,7 +153,10 @@ void AppLauncher::update()
         }
         getProcessHwnds();
         if (Settings::launch.closeOnHwndExit) {
-            if (AppLauncher::process_hwnds_.empty()) {
+            if (!AppLauncher::process_hwnds_.empty()) {
+                open_window_found = true;
+            }
+            else if (AppLauncher::process_hwnds_.empty() && open_window_found) {
                 spdlog::info("Configured to close when all windows are closed. Shutting down...");
                 shutdown_();
             }
